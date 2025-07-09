@@ -13,7 +13,7 @@
 using namespace utec::nn;
 
 int main() {
-    const std::string weights_path = "bin/weights.txt";
+    const std::string weights_path = "weights.txt";
 
     auto net = std::make_unique<NeuralNetwork<float>>();
     net->add_layer(std::make_unique<Dense<float>>(3, 8));
@@ -27,7 +27,7 @@ int main() {
     std::vector<std::vector<float>> X_data;
     std::vector<float> Y_data;
 
-    int episodes = 1000;
+    int episodes = 300;
     const int max_steps = 200;
     std::cout << "Recolectando datos de entrenamiento...\n";
     for (int ep = 0; ep < episodes; ++ep) {
@@ -56,7 +56,7 @@ int main() {
             std::cout << "Episodio " << ep << " completado, total datos: " << X_data.size() << "\n";
     }
 
-    std::cout << "Recolección completada. Entrenando...\n";
+    std::cout << "Recoleccion completada. Entrenando...\n";
 
     Tensor<float, 2> X(X_data.size(), 3);
     Tensor<float, 2> Y(Y_data.size(), 1);
@@ -66,7 +66,7 @@ int main() {
         Y(i, 0) = Y_data[i];
     }
 
-    const size_t epochs = 300;
+    const size_t epochs = 100;
     const size_t batch_size = 32;
     const float lr = 0.01f;
     const float decay = 0.001f;
