@@ -34,25 +34,37 @@
 
 ---
 
+
 ### Requisitos e instalación
 
 1. **Compilador**: GCC 11 o superior
+
 2. **Dependencias**:
 
-   * CMake 3.18+
-   * Eigen 3.4
-   * \[Otra librería opcional]
+  * CMake 3.14+ (recomendado 3.18+)
+  * `<random>`
+  * `<algorithm>`
+  * `<ctime>`
+  * `<memory>`
+  * `<cmath>`
+  * `<vector>`
+  * `<string>`
+  * `<iostream>`
+  * `<array>`
+  * `<numeric>`
+  * `<stdexcept>`
+  * `<fstream>`
+  * `<unordered_map>`
+
 3. **Instalación**:
 
    ```bash
-   git clone https://github.com/EJEMPLO/proyecto-final.git
-   cd proyecto-final
-   mkdir build && cd build
-   cmake ..
-   make
+   # Clonar el repositorio (ajusta según la ruta real)
+   git clone https://github.com/TU-USUARIO/pongmasters.git
    ```
 
 > *Ejemplo de repositorio y comandos, ajustar según proyecto.*
+
 
 ---
 ### 1. Investigación teórica

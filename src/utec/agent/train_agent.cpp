@@ -2,6 +2,8 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <iomanip>
 #include "../../../include/utec/algebra/tensor.h"
 #include "../../../include/utec/nn/neural_network.h"
 #include "../../../include/utec/nn/dense.h"
@@ -13,6 +15,8 @@
 using namespace utec::nn;
 
 int main() {
+    auto start = std::chrono::high_resolution_clock::now(); // iniciar temporizador
+
     const std::string weights_path = "weights.txt";
 
     auto net = std::make_unique<NeuralNetwork<float>>();
@@ -89,15 +93,10 @@ int main() {
 
     net->save_weights(weights_path);
     std::cout << "Modelo entrenado y pesos guardados en: " << weights_path << "\n";
-
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "\n\nTiempo de ejecución total: "
+              << std::fixed << std::setprecision(3)
+              << duration.count() / 1000.0 << " segundos." << std::endl;
     return 0;
 }
-
-
-
-
-
-
-
-
-
