@@ -19,11 +19,15 @@ int main() {
 
     const std::string weights_path = "weights.txt";
 
+    // Arquitectura de la red
     auto net = std::make_unique<NeuralNetwork<float>>();
     net->add_layer(std::make_unique<Dense<float>>(3, 8));
     net->add_layer(std::make_unique<ReLU<float>>());
     net->add_layer(std::make_unique<Dense<float>>(8, 1));
     net->add_layer(std::make_unique<Sigmoid<float>>());
+    /*
+    * Qué es: Número de capas y neuronas por capa.
+    */
 
     std::cout << "Entrenando modelo en entorno Pong...\n";
 
@@ -32,7 +36,13 @@ int main() {
     std::vector<float> Y_data;
 
     int episodes = 300;
+    /* episodes // SE PUEDE MODIFICAR
+     * Qué es: Número de episodios para recolectar datos del entorno Pong.
+    */
     const int max_steps = 200;
+    /* max_steps // SE PUEDE MODIFICAR
+    * Qué es: Máximo número de pasos por episodio.
+    */
     std::cout << "Recolectando datos de entrenamiento...\n";
     for (int ep = 0; ep < episodes; ++ep) {
         State s = env.reset();
@@ -71,9 +81,21 @@ int main() {
     }
 
     const size_t epochs = 100;
+    /* epochs // SE PUEDE MODIFICAR
+    * Qué es: Número de veces que el modelo ve todos los datos durante el entrenamiento.
+    */
     const size_t batch_size = 32;
+    /* batch_size // SE PUEDE MODIFICAR
+    * Qué es: Tamaño de los bloques de datos usados por cada paso de entrenamiento.
+    */
     const float lr = 0.01f;
+    /* lr // SE PUEDE MODIFICAR
+    * Qué es: Tasa de aprendizaje (qué tanto se actualizan los pesos en cada paso).
+    */
     const float decay = 0.001f;
+    /* decay // SE PUEDE MODIFICAR
+     * Qué es: Reducción progresiva del learning rate.
+    */
 
     std::cout << "\nPredicciones antes del entrenamiento:\n";
     auto preds_before = net->predict(X);

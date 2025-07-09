@@ -63,9 +63,6 @@
    git clone https://github.com/TU-USUARIO/pongmasters.git
    ```
 
-> *Ejemplo de repositorio y comandos, ajustar según proyecto.*
-
-
 ---
 ### 1. Investigación teórica
 
@@ -175,13 +172,35 @@ Permite que múltiples clases compartan un mismo tipo de interfaz para utilizars
 #### 2.5 **Estructura de carpetas**
 
   ```
-  proyecto-final/
+  pongmasters-draft/
+  ├── cmake-build-debug/
+  ├── docs/
+  │   └── README.md
+  ├── include/
+  │   └── utec/
+  │       ├── agent/
+  │       │   ├── EnvGym.h
+  │       │   ├── PongAgent.h
+  │       │   └── State.h
+  │       ├── algebra/
+  │       │   └── tensor.h
+  │       └── nn/
+  │           ├── activation.h
+  │           ├── dense.h
+  │           ├── interfaces.h
+  │           ├── loss.h
+  │           ├── neural_network.h
+  │           └── optimizer.h
   ├── src/
-  │   ├── layers/
-  │   ├── optimizers/
-  │   └── main.cpp
-  ├── tests/
-  └── docs/
+  │   └── utec/
+  │       └── agent/
+  │           ├── EnvGym.cpp
+  │           ├── PongAgent.cpp
+  │           └── train_agent.cpp
+  └── tests/
+      ├── test_agent_env.cpp
+      ├── test_neural_network.cpp
+      └── test_tensor.cpp
   ```
 
 #### 2.6 Manual de uso y casos de prueba
@@ -210,19 +229,75 @@ Permite que múltiples clases compartan un mismo tipo de interfaz para utilizars
 
 ### 4. Análisis del rendimiento
 
-* **Métricas de ejemplo**:
+#### 4.1 Métricas globales (promedio sobre experimentos analizados):
+- **Iteraciones:** 100-500 épocas según configuración.
+- **Tiempo total de entrenamiento:** entre 5s y 137s dependiendo de epochs, max_steps y episodios.
+- **Error final promedio:** 0.0007 - 0.08 según dataset y configuración.
+- **Reducción de error inicial a final:** típicamente entre 90-99% en configuraciones con suficientes epochs y datos.
 
-  * Iteraciones: 1000 épocas.
-  * Tiempo total de entrenamiento: 2m30s.
-  * Precisión final: 92.5%.
-* **Ventajas/Desventajas**:
+Estos datos se pueden observar en nuestro excel: [Analisis_Variables_Eficiencia_Entrenamiento_Pong.xlsx](https://docs.google.com/spreadsheets/d/1NrIKIr0SgqGlAIu140GT6Db6w9tRGxkbH1DCnRCKGzg/edit?usp=sharing)
 
-  * * Código ligero y dependencias mínimas.
-  * – Sin paralelización, rendimiento limitado.
-* **Mejoras futuras**:
+#### 4.2 Análisis del efecto de cada variable en el rendimiento - Proyecto Pong
 
-  * Uso de BLAS para multiplicaciones (Justificación).
-  * Paralelizar entrenamiento por lotes (Justificación).
+##### 4.2.1 Epochs (Épocas)
+- **Aumentar epochs:**
+  - Permite refinar pesos y **reducir el error final** si el loss sigue bajando.
+  - **Incrementa el tiempo de entrenamiento**, especialmente con datasets grandes.
+  - Mejora la precisión final hasta estabilizarse si se usa un learning rate adecuado.
+
+- **Disminuir epochs:**
+  - **Reduce el tiempo de entrenamiento.**
+  - Puede causar **subentrenamiento (underfitting)** con error final alto y baja precisión.
+
+##### 4.2.2 Batch Size
+- **Aumentar batch size:**
+  - Menos actualizaciones de pesos por epoch, entrenando más rápido.
+  - Puede reducir la generalización si es demasiado grande.
+  - Útil para aprovechar paralelización y reducir tiempos en GPU/CPU.
+
+- **Disminuir batch size:**
+  - Más actualizaciones por epoch, mejor capacidad de generalización.
+  - Entrenamiento más lento pero con mejor convergencia en muchos casos.
+
+##### 4.2.3 Max Steps
+- **Aumentar max_steps:**
+  - Más datos por episodio, mayor diversidad de estados.
+  - Mejora representación de datos y **reduce error final**.
+  - Aumenta significativamente el tiempo de recolección.
+
+  - **Disminuir max_steps:**
+    - Reduce tiempo de recolección.
+    - Menos diversidad de datos, posible underfitting.
+
+##### 4.2.4 Episodes
+- **Aumentar episodes:**
+  - Genera más datos para entrenamiento, mejorando generalización.
+  - Reduce error inicial promedio.
+  - Incrementa tiempo de recolección antes del entrenamiento.
+
+- **Disminuir episodes:**
+  - Reduce tiempo de recolección.
+  - Genera datasets pequeños, limitando aprendizaje.
+
+##### 4.2.5 Resumen general
+| Variable   | Aumentar →                                  | Disminuir →                            |
+|------------|---------------------------------------------|----------------------------------------|
+| **Epochs**     | ↓ Error final, ↑ tiempo                     | ↑ Error final, ↓ tiempo               |
+| **Batch Size** | ↓ tiempo por epoch, posible ↓ generalización | ↑ generalización, ↑ tiempo            |
+| **Max Steps**  | ↑ diversidad de datos, ↓ error final        | ↓ diversidad, posible underfitting    |
+| **Episodes**   | ↑ datos, ↓ error inicial                   | ↓ datos, ↑ error inicial              |
+
+#### 4.3 Ventajas/Desventajas del flujo actual:
+
+**Ventajas:**
+- Código ligero, dependencias controladas (uso de C++ y librerías propias).
+- Permite control preciso de variables como epochs, batch size, max_steps y episodios para análisis fino.
+- Capacidad de evaluar el impacto de cada variable de forma aislada en la reducción de error y eficiencia del entrenamiento.
+
+**Desventajas:**
+- **Sin paralelización:** El entrenamiento es secuencial, lo que genera tiempos de entrenamiento prolongados en configuraciones de 500 epochs o más (hasta 137s).
+- **Uso de CPU sin BLAS:** Multiplicaciones de matrices y forward/backward pass no están optimizadas a nivel bajo, afectando el rendimiento en datasets grandes.
+- La recolección de datos con max_steps y episodios altos genera tiempos prolongados antes del entrenamiento.
 
 ---
 
@@ -236,16 +311,30 @@ Permite que múltiples clases compartan un mismo tipo de interfaz para utilizars
 | Pruebas y benchmarking    | Ocampo Mariela    | Generación de métricas    |
 | Documentación y demo      | Mariano Sanchez   | Tutorial y video demo     |
 
-> *Actualizar con tareas y nombres reales.*
-
 ---
 
 ### 6. Conclusiones
 
-* **Logros**: Implementar NN desde cero, validar en dataset de ejemplo.
-* **Evaluación**: Calidad y rendimiento adecuados para propósito académico.
-* **Aprendizajes**: Profundización en backpropagation y optimización.
-* **Recomendaciones**: Escalar a datasets más grandes y optimizar memoria.
+* **Logros**: Se logró implementar desde cero una red neuronal funcional en C++ con control total de las capas, funciones de activación, funciones de pérdida y optimizadores, integrándola con un entorno Pong propio para generación de datasets en entornos de refuerzo. Se consiguió entrenar el modelo con distintos hiperparámetros (`epochs`, `batch size`, `max_steps`, `episodes`) y medir con precisión su impacto en el error inicial, error final, tiempo de entrenamiento y capacidad de generalización. Asimismo, se generaron tablas y análisis comparativos que fortalecen el entendimiento experimental sobre el comportamiento de redes neuronales en C++.
+
+* **Evaluación**: El sistema desarrollado demostró ser robusto para propósitos de investigación académica, mostrando reducciones consistentes de error inicial a error final de hasta un 99% en configuraciones óptimas, y permitiendo entrenamientos controlados entre 5 y 137 segundos según el tamaño del dataset y el número de épocas. Además, la arquitectura de código utilizada, con patrones de diseño como `Strategy` e `Interface`, permitió la modularidad y el fácil intercambio de funciones de activación, pérdida y optimización, asegurando un flujo de entrenamiento flexible y escalable.
+
+* **Aprendizajes**: A nivel técnico, se consolidó la comprensión práctica de `backpropagation`, cálculo de gradientes y manejo de estructuras de datos en C++ orientadas a redes neuronales. Se comprendió el rol crítico de los hiperparámetros:
+  - **`Epochs`**: Aumentar épocas reduce error final pero incrementa el tiempo de entrenamiento, especialmente útil si el loss continúa disminuyendo.
+  - **`Batch Size`**: Tamaños grandes reducen el tiempo de entrenamiento por epoch pero pueden disminuir la capacidad de generalización, mientras que tamaños pequeños permiten una convergencia más suave.
+  - **`Max Steps` y `Episodes`**: Impactan directamente en la diversidad y cantidad de datos recolectados, afectando el error inicial y final y permitiendo evaluar la robustez de la red en entornos de refuerzo.
+
+  Se comprendió también el impacto que cada variable tiene en el pipeline de entrenamiento, permitiendo diseñar experimentos controlados, analizar resultados con un enfoque científico y comprender cuándo la limitación del modelo depende de falta de datos o de la arquitectura/hyperparametrización.
+
+* **Recomendaciones**: Para fases posteriores de investigación y optimización:
+  - **Escalar datasets** con más episodios y pasos máximos para robustecer la generalización del modelo en entornos complejos.
+  - **Implementar BLAS (OpenBLAS/Intel MKL)** para acelerar multiplicaciones de matrices durante forward y backward pass, reduciendo tiempos de entrenamiento y permitiendo experimentar con redes más profundas sin penalización de tiempo excesiva.
+  - **Paralelizar el entrenamiento por lotes** utilizando OpenMP o CUDA para mejorar la eficiencia en entrenamientos con batch sizes grandes.
+  - **Explorar planificadores de learning rate dinámicos**, que reduzcan automáticamente la tasa de aprendizaje en caso de estancamiento, mejorando la convergencia sin necesidad de reiniciar manualmente.
+  - Experimentar con **otras arquitecturas como CNN o LSTM** para extender el entrenamiento a problemas más complejos, como visión por computador o series de tiempo en entornos de refuerzo.
+  - Mantener el enfoque modular de la arquitectura, para facilitar la integración de nuevos experimentos y el cambio de configuraciones de forma ágil.
+
+En conclusión, el desarrollo de este proyecto ha permitido comprender profundamente el proceso de diseño, entrenamiento y análisis de redes neuronales implementadas en C++ desde cero, fortaleciendo competencias de investigación, programación y optimización, sentando una base sólida para escalar a proyectos más ambiciosos en el campo de inteligencia artificial y aprendizaje profundo.
 
 ---
 
