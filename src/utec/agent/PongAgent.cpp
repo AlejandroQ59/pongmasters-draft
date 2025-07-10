@@ -1,2 +1,0 @@
-// PongAgent.cpp
-// PongAgent.h
