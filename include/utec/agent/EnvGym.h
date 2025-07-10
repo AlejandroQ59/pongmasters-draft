@@ -10,20 +10,32 @@ namespace utec::nn {
 
     class EnvGym {
         State state;
+        float enemy_y;
         std::default_random_engine rng;
         float ball_dx, ball_dy;
-        float paddle_speed;
+        float player_speed;
+        float ai_speed;
         int steps;
         int max_steps;
 
     public:
         EnvGym() :
             ball_dx(0.03f), ball_dy(0.02f),
-            paddle_speed(0.04f),
+            player_speed(0.07f),
+            ai_speed(0.04f),
             steps(0), max_steps(200)
         {
             rng.seed(static_cast<unsigned>(std::time(nullptr)));
             reset();
+        }
+
+        State get_state() const {
+            return State{
+                state.ball_x,
+                state.ball_y,
+                state.paddle_y,
+                enemy_y
+            };
         }
 
         State reset() {
@@ -33,22 +45,25 @@ namespace utec::nn {
             state.ball_x = 0.5f;
             state.ball_y = dist(rng);
             state.paddle_y = dist(rng);
+            enemy_y = dist(rng);
 
             ball_dx = (rng() % 2 == 0 ? 1 : -1) * (0.02f + std::abs(dir(rng)));
             ball_dy = (rng() % 2 == 0 ? 1 : -1) * (0.01f + std::abs(dir(rng)));
 
             steps = 0;
-            return state;
+            return get_state();
         }
 
 
-        State step(int action, float& reward, bool& done) {
+        State step(int action, float& reward, bool& done, int ai_action) {
             steps++;
 
 
-            state.paddle_y += action * paddle_speed;
+            state.paddle_y += action * player_speed;
             state.paddle_y = std::clamp(state.paddle_y, 0.0f, 1.0f);
 
+            enemy_y += ai_action * ai_speed;
+            enemy_y = std::clamp(enemy_y, 0.0f, 1.0f);
 
             state.ball_x += ball_dx;
             state.ball_y += ball_dy;
@@ -79,14 +94,27 @@ namespace utec::nn {
 
 
             if (state.ball_x <= 0.0f) {
-                ball_dx *= -1;
+                if (std::abs(state.ball_y - enemy_y) < 0.1f) {
+                    ball_dx *= -1;
+                    state.ball_x = 0.01f;
+
+                    float dy_jitter = (static_cast<float>(rng()) / rng.max() - 0.5f) * 0.02f;
+                    ball_dy += dy_jitter;
+
+                    // recompensa negativa porque la IA lo bloqueó
+                    reward = -0.2f;
+                } else {
+                    reward = +1.0f;  // el jugador ganó punto
+                    done = true;
+                    return reset();
+                }
             }
 
             if (steps >= max_steps) {
                 done = true;
             }
 
-            return state;
+            return get_state();
         }
     };
 
