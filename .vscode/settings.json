@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.dbclient-js": "javascript",
+        "*.css": "tailwindcss",
+        "iostream": "cpp",
+        "iosfwd": "cpp",
+        "ctime": "cpp",
+        "memory": "cpp",
+        "chrono": "cpp"
+    }
+}

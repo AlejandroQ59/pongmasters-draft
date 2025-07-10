@@ -93,9 +93,9 @@ Sosa Jerez y Zamora Alvarado (2022) describen la evolución del perceptrón simp
 
   donde:
 
-- \( w_k \): vector de pesos en el paso \( k \)
-- \( \alpha \): tasa de aprendizaje
-- \( \nabla C(w_k) \): gradiente del costo respecto a los pesos
+- $w_k$ : vector de pesos en el paso $k$
+- $\alpha$: tasa de aprendizaje
+- $\nabla C(w_k)$: gradiente del costo respecto a los pesos
 
   SGD es un método simple y eficiente, especialmente útil cuando se trabaja con grandes cantidades de datos. Entre sus ventajas se encuentra su capacidad de converger rápidamente en entornos ruidosos. Sin embargo, puede presentar oscilaciones y una alta sensibilidad al tamaño del batch si no se ajustan adecuadamente sus hiperparámetros [6](#ref6).
 
@@ -103,9 +103,9 @@ Sosa Jerez y Zamora Alvarado (2022) describen la evolución del perceptrón simp
 - **Optimizador Adam**:  
   El mismo autor también cubre el optimizador *Adam*, que ajusta dinámicamente la tasa de aprendizaje mediante momentos del gradiente:
 
-  - \( m_t \): estimación del **primer momento** (media del gradiente),
-  - \( v_t \): estimación del **segundo momento** (varianza del gradiente),
-  - Correcciones de sesgo para \( \hat{m}_t \) y \( \hat{v}_t \) (momentos ajustados).
+  - $m_t$: estimación del **primer momento** (media del gradiente),
+  - $v_t$: estimación del **segundo momento** (varianza del gradiente),
+  - Correcciones de sesgo para $\hat{m}_t$ y $\hat{v}_t$ (momentos ajustados).
 
   Fórmula de actualización:
 
@@ -176,35 +176,41 @@ Permite que múltiples clases compartan un mismo tipo de interfaz para utilizars
 #### 2.5 **Estructura de carpetas**
 
   ```
-  pongmasters-draft/
+  pongmasters-draft
   ├── cmake-build-debug/
-  ├── docs/
-  │   └── README.md
-  ├── include/
-  │   └── utec/
-  │       ├── agent/
-  │       │   ├── EnvGym.h
-  │       │   ├── PongAgent.h
-  │       │   └── State.h
-  │       ├── algebra/
-  │       │   └── tensor.h
-  │       └── nn/
-  │           ├── activation.h
-  │           ├── dense.h
-  │           ├── interfaces.h
-  │           ├── loss.h
-  │           ├── neural_network.h
-  │           └── optimizer.h
-  ├── src/
-  │   └── utec/
-  │       └── agent/
-  │           ├── EnvGym.cpp
-  │           ├── PongAgent.cpp
-  │           └── train_agent.cpp
-  └── tests/
-      ├── test_agent_env.cpp
-      ├── test_neural_network.cpp
-      └── test_tensor.cpp
+  ├── docs
+  │  └── README.md
+  ├── include
+  │  └── utec
+  │     ├── agent
+  │     │  ├── EnvGym.h
+  │     │  ├── PongAgent.h
+  │     │  └── State.h
+  │     ├── algebra
+  │     │  └── tensor.h
+  │     └── nn
+  │        ├── activation.h
+  │        ├── dense.h
+  │        ├── interfaces.h
+  │        ├── loss.h
+  │        ├── neural_network.h
+  │        └── optimizer.h
+  ├── src
+  │  ├── gameplay
+  │  │  └── main__game.cpp
+  │  └── utec
+  │     ├── agent
+  │     │  ├── EnvGym.cpp
+  │     │  ├── PongAgent.cpp
+  │     │  ├── train_agent.cpp
+  │     │  └── weights.txt
+  │     └── ui
+  │        └── display.cpp
+  └── tests
+     ├── test_agent_env.cpp
+     ├── test_neural_network.cpp
+     └── test_tensor.cpp
+
   ```
 
 #### 2.6 Manual de uso y casos de prueba
