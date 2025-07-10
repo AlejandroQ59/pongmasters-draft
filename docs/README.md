@@ -26,7 +26,7 @@
 * **Grupo**: `Pong Masters`
 * **Integrantes**:
 
-  * Galindo Quevedo Mauricio Jesus – 20241420 (Documentación y fundamentación teórica)
+  * Galindo Quevedo Mauricio Jesús – 20241420 (Documentación y fundamentación teórica)
   * Lopez Rojas, Yaritza Milagros – 202410328 (Desarrollo de la arquitectura)
   * Ocampo Lecca, Mariela del Carmen – 202410258 (Pruebas y benchmarking)
   * Quesada Polar Alejandro Martín – 202410209 (Implementación del modelo)
@@ -178,6 +178,7 @@ Permite que múltiples clases compartan un mismo tipo de interfaz para utilizars
   ```
   pongmasters-draft
   ├── cmake-build-debug/
+  │  └── weights.txt
   ├── docs
   │  └── README.md
   ├── include
@@ -200,15 +201,10 @@ Permite que múltiples clases compartan un mismo tipo de interfaz para utilizars
   │  │  └── main__game.cpp
   │  └── utec
   │     ├── agent
-  │     │  ├── EnvGym.cpp
-  │     │  ├── PongAgent.cpp
   │     │  ├── train_agent.cpp
-  │     │  └── weights.txt
   │     └── ui
   │        └── display.cpp
   └── tests
-     ├── test_agent_env.cpp
-     ├── test_neural_network.cpp
      └── test_tensor.cpp
 
   ```
