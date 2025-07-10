@@ -1,69 +1,70 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <thread>
 #include <chrono>
-#include <conio.h> // Para _kbhit() y _getch() en Windows
-#include "../../include/utec/agent/EnvGym.h"
-
-using namespace utec;
+#include "../../../include/utec/agent/State.h"
 
 const int WIDTH = 40;
 const int HEIGHT = 20;
 
-const char BALL_CHAR = 'O';
-const char PADDLE_CHAR = '|';
-const char EMPTY_CHAR = ' ';
+void render(const State &state, int player_score, int ai_score)
+{
+    std::vector<std::string> screen(HEIGHT + 1, std::string(WIDTH, ' '));
 
-void clear_screen() {
-    std::system("cls");
-}
+    // Línea de puntaje (fuera del campo de juego)
+    std::string score_line = " IA: " + std::to_string(ai_score) + "   Jugador: " + std::to_string(player_score);
+    for (size_t i = 0; i < score_line.size() && i < WIDTH; ++i)
+        screen[0][i] = score_line[i];
 
-// Dibuja el campo
-void draw(const State& state) {
-    int ball_x = static_cast<int>(state.ball_x * WIDTH);
-    int ball_y = static_cast<int>(state.ball_y * HEIGHT);
-    int paddle_y = static_cast<int>(state.paddle_y * HEIGHT);
-    int enemy_y = static_cast<int>(state.enemy_y * HEIGHT);
+    // Borde superior e inferior
+    for (int x = 0; x < WIDTH; ++x) {
+        screen[1][x] = '.';
+        screen[HEIGHT][x] = '.';
+    }
 
-    for (int y = 0; y < HEIGHT; ++y) {
-        for (int x = 0; x < WIDTH; ++x) {
-            if (x == 0 || x == WIDTH - 1) std::cout << '#'; // Bordes
-            else if (x == 2 && std::abs(y - paddle_y) <= 1) std::cout << PADDLE_CHAR;
-            else if (x == WIDTH - 3 && std::abs(y - enemy_y) <= 1) std::cout << PADDLE_CHAR;
-            else if (x == ball_x && y == ball_y) std::cout << BALL_CHAR;
-            else std::cout << EMPTY_CHAR;
+    // Borde izquierdo y derecho
+    for (int y = 1; y < HEIGHT; ++y) {
+        screen[y][0] = '.';
+        screen[y][WIDTH - 1] = '.';
+    }
+
+    // Coordenadas escaladas (dejan espacio para el marcador)
+    int ball_x = static_cast<int>(state.ball_x * (WIDTH - 2)) + 1;
+    int ball_y = static_cast<int>(state.ball_y * (HEIGHT - 2)) + 1;
+    int paddle_y = static_cast<int>(state.paddle_y * (HEIGHT - 4)) + 1;
+    int enemy_y = static_cast<int>(state.enemy_y * (HEIGHT - 4)) + 1;
+
+    // Pelota
+    if (ball_y > 1 && ball_y < HEIGHT && ball_x > 0 && ball_x < WIDTH - 1)
+        screen[ball_y][ball_x] = 'O';
+
+    // Paleta jugador (derecha)
+    for (int i = 0; i < 3; ++i) {
+        int y = paddle_y + i;
+        if (y > 1 && y < HEIGHT) {
+            screen[y][WIDTH - 3] = '[';
+            screen[y][WIDTH - 2] = '[';
         }
-        std::cout << '\n';
-    }
-}
-
-// Maneja entrada del usuario (teclas W/S)
-int player_input() {
-    if (_kbhit()) {
-        char key = _getch();
-        if (key == 'w' || key == 'W') return -1;
-        if (key == 's' || key == 'S') return 1;
-    }
-    return 0;
-}
-
-// Bucle principal de juego
-void run_game(agent::EnvGym& env, PongAgent<float>& agent) {
-    float reward = 0.f;
-    bool done = false;
-    auto state = env.reset();
-
-    while (!done) {
-        clear_screen();
-        draw(state);
-
-        int human_action = player_input(); // Teclas W/S
-        int ai_action = agent.act(state);  // -1, 0, 1
-
-        state = env.step(human_action, reward, done, ai_action);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(80));
     }
 
-    std::cout << "\n¡Juego terminado!\n";
+    // Paleta IA (izquierda)
+    for (int i = 0; i < 3; ++i) {
+        int y = enemy_y + i;
+        if (y > 1 && y < HEIGHT) {
+            screen[y][1] = ']';
+            screen[y][2] = ']';
+        }
+    }
+
+    // Limpiar pantalla
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+
+    // Mostrar pantalla
+    for (const auto &line : screen)
+        std::cout << line << '\n';
 }
