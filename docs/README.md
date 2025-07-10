@@ -55,6 +55,10 @@
   * `<stdexcept>`
   * `<fstream>`
   * `<unordered_map>`
+  * `<chrono>`
+  * `<thread>`
+  * `<memory>`
+  * `<conio.h>`
 
 3. **Instalación**:
 
