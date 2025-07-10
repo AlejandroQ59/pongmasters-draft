@@ -63,7 +63,7 @@ int main() {
             else label = 1.0f;
 
             Y_data.push_back(label);
-            s = env.step(action, reward, done);
+            s = env.step(action, reward, done, 0);
         }
 
         if (ep % 50 == 0)
