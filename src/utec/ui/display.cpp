@@ -2,7 +2,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
-#include <conio.h> // Para _kbhit() y _getch() en Windows
+#include <conio.h> 
 #include "../../include/utec/agent/EnvGym.h"
 
 using namespace utec;
@@ -18,7 +18,6 @@ void clear_screen() {
     std::system("cls");
 }
 
-// Dibuja el campo
 void draw(const State& state) {
     int ball_x = static_cast<int>(state.ball_x * WIDTH);
     int ball_y = static_cast<int>(state.ball_y * HEIGHT);
@@ -27,7 +26,7 @@ void draw(const State& state) {
 
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
-            if (x == 0 || x == WIDTH - 1) std::cout << '#'; // Bordes
+            if (x == 0 || x == WIDTH - 1) std::cout << '#'; 
             else if (x == 2 && std::abs(y - paddle_y) <= 1) std::cout << PADDLE_CHAR;
             else if (x == WIDTH - 3 && std::abs(y - enemy_y) <= 1) std::cout << PADDLE_CHAR;
             else if (x == ball_x && y == ball_y) std::cout << BALL_CHAR;
@@ -47,7 +46,6 @@ int player_input() {
     return 0;
 }
 
-// Bucle principal de juego
 void run_game(agent::EnvGym& env, PongAgent<float>& agent) {
     float reward = 0.f;
     bool done = false;
@@ -57,8 +55,8 @@ void run_game(agent::EnvGym& env, PongAgent<float>& agent) {
         clear_screen();
         draw(state);
 
-        int human_action = player_input(); // Teclas W/S
-        int ai_action = agent.act(state);  // -1, 0, 1
+        int human_action = player_input();
+        int ai_action = agent.act(state);  
 
         state = env.step(human_action, reward, done, ai_action);
 
